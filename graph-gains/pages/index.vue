@@ -1,11 +1,17 @@
 <script setup lang="ts">
-const count = ref(0);
-count.value = 10;
+import { useAuth, SignInButton, UserButton } from "vue-clerk";
+
+// const count = ref(0);
+// count.value = 10;
+
+const { isLoaded, userId, sessionId, isSignedIn } = useAuth();
 </script>
 
 <template>
   <Container class="py-32">
-    <div class="flex flex-col gap-8 text-center md:flex-row md:text-left">
+    <div
+      class="flex flex-col items-center justify-center gap-8 text-center md:flex-row md:text-left"
+    >
       <div class="flex-1 flex-col items-center justify-center lg:min-w-[30rem]">
         <div class="flex-1">
           <h1 class="mb-8 text-balance text-5xl font-black drop-shadow-lg">
@@ -15,8 +21,12 @@ count.value = 10;
             We believe that weight tracking should be easy and frictionless.
             that's why we created GraphGains.
           </p>
-          <CtaButton to="bruhhh">try for free</CtaButton>
-          <div class="text-primary-500 py-4 font-medium">View dashboard</div>
+          <div v-if="!isSignedIn">
+            <CtaButton to="/login">try for free</CtaButton>
+          </div>
+          <div v-if="isSignedIn">
+            <CtaButton to="/dashboard">View dashboard</CtaButton>
+          </div>
         </div>
       </div>
       <div class="flex w-full flex-1 items-center justify-center">
@@ -31,8 +41,8 @@ count.value = 10;
     <div
       class="flex w-full flex-col justify-between gap-12 text-center md:flex-row md:text-left"
     >
-      <LandingPageListItem title="💾 Import your data"
-        >Import your existing weight data from myfitnesspal to GraphGains
+      <LandingPageListItem title="💾 Migrate your data"
+        >Migrate your existing weight data from myfitnesspal to GraphGains
       </LandingPageListItem>
       <LandingPageListItem title="⚡ Blazingly fast"
         >Make new entries faster than ever. Use your phones camera to scan the
@@ -40,7 +50,7 @@ count.value = 10;
       </LandingPageListItem>
       <LandingPageListItem title="⏳ Long term thinking"
         >Unlike many other apps, GraphGains is designed from the ground up to be
-        used for years.
+        used for years
       </LandingPageListItem>
     </div>
   </Container>
@@ -52,6 +62,6 @@ count.value = 10;
       We're currently still in the process of building and defining our
       services. If you want to support us, donate to our github.
     </p>
-    <CtaButton>Donate</CtaButton>
+    <CtaButton to="https://github.com/Balazs-topg">Donate</CtaButton>
   </Container>
 </template>
