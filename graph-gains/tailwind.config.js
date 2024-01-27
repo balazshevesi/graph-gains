@@ -9,7 +9,11 @@ export default {
     "./error.vue",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "#10b981", // emerald 500
+      },
+    },
   },
   plugins: [],
 };

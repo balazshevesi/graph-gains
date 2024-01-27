@@ -9,7 +9,7 @@ count.value = 10;
 
 <template>
   <button
-    class="relative overflow-hidden rounded-md bg-neutral-400 px-4 py-1 font-semibold uppercase text-white shadow"
+    class="bg-primary shadow-primary/50 relative overflow-hidden rounded-md px-4 py-1 font-semibold uppercase text-white shadow-md"
   >
     <slot />
   </button>
