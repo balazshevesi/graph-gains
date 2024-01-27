@@ -5,9 +5,9 @@ count.value = 10;
 
 <template>
   <Container class="py-32">
-    <div class="flex">
-      <div class="flex flex-1 items-center justify-center">
-        <div>
+    <div class="flex flex-col gap-8 text-center md:flex-row md:text-left">
+      <div class="flex-1 flex-col items-center justify-center lg:min-w-[30rem]">
+        <div class="flex-1">
           <h1 class="mb-8 text-balance text-5xl font-black drop-shadow-lg">
             Weight Tracking Without The Friction
           </h1>
@@ -15,7 +15,7 @@ count.value = 10;
             We believe that weight tracking should be easy and frictionless.
             that's why we created GraphGains.
           </p>
-          <CtaButton>try for free</CtaButton>
+          <CtaButton to="bruhhh">try for free</CtaButton>
           <div class="text-primary-500 py-4 font-medium">View dashboard</div>
         </div>
       </div>
@@ -28,7 +28,9 @@ count.value = 10;
     </div>
   </Container>
   <Container class="max-w-5xl">
-    <div class="flex w-full justify-between gap-12">
+    <div
+      class="flex w-full flex-col justify-between gap-12 text-center md:flex-row md:text-left"
+    >
       <LandingPageListItem title="💾 Import your data"
         >Import your existing weight data from myfitnesspal to GraphGains
       </LandingPageListItem>
@@ -42,7 +44,7 @@ count.value = 10;
       </LandingPageListItem>
     </div>
   </Container>
-  <Container class="mb-16 max-w-3xl text-center">
+  <Container class="mb-16 flex max-w-3xl flex-col items-center text-center">
     <h1 class="mb-8 text-balance text-4xl font-black drop-shadow-lg">
       Are you with us or not?
     </h1>

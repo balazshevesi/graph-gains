@@ -7,7 +7,7 @@
         <div class="flex w-full max-w-6xl items-center px-4 py-4">
           <NuxtLink to="/" class="text-2xl font-bold">GraphGains</NuxtLink>
           <div class="ml-auto">
-            <NavButton>login</NavButton>
+            <NavButton to="/poooooop">login</NavButton>
           </div>
         </div>
       </div>
