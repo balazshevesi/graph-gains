@@ -1,5 +1,7 @@
 <template>
-  <div>
-    <div class="bg-pink-600">hello</div>
+  <div class="selection:bg-emerald-500/50">
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
