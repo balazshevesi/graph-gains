@@ -4,7 +4,7 @@ import { useAuth, SignInButton, UserButton } from "vue-clerk";
 // const count = ref(0);
 // count.value = 10;
 
-const { isLoaded, userId, sessionId, isSignedIn } = useAuth();
+const { isSignedIn } = useAuth();
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuth, SignInButton, UserButton } from "vue-clerk";
 
-const { isLoaded, userId, sessionId, isSignedIn } = useAuth();
+const { isSignedIn } = useAuth();
 </script>
 
 <template>
