@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+      apiBase: process.env.API_BASE,
     },
     clerkSecretKey: process.env.CLERK_SECRET_KEY,
   },
