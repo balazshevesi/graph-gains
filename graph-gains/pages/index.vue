@@ -25,7 +25,7 @@ const { isSignedIn } = useAuth();
             <CtaButton to="/login">try for free</CtaButton>
           </div>
           <div v-if="isSignedIn">
-            <CtaButton to="/dashboard">View dashboard</CtaButton>
+            <CtaButton to="/dashboard">Dashboard</CtaButton>
           </div>
         </div>
       </div>

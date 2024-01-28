@@ -17,7 +17,7 @@ const { isSignedIn } = useAuth();
           <NuxtLink to="/" class="text-2xl font-bold">GraphGains</NuxtLink>
           <div class="ml-auto">
             <div v-if="isSignedIn" class="flex gap-2">
-              <NavButton to="/dashboard">View dashboard</NavButton>
+              <NavButton to="/dashboard">Dashboard</NavButton>
               <UserButton afterSignOutUrl="/" />
             </div>
             <div v-if="!isSignedIn" class="flex">
