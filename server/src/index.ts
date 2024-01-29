@@ -1,7 +1,9 @@
 import { Elysia } from "elysia";
 import { clerkPlugin } from "elysia-clerk";
+import { cors } from "@elysiajs/cors";
 
 const app = new Elysia()
+  .use(cors())
   .use(clerkPlugin())
   .get("/", async () => {
     return { hello: "world" };

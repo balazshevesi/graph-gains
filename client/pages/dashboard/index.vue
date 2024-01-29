@@ -17,7 +17,7 @@ const { data } = await useFetch(`${runtimeConfig.public.apiBase}/private`, {
   },
 });
 const user = data._rawValue.user;
-console.log(user);
+// console.log(user);
 </script>
 
 <template>
