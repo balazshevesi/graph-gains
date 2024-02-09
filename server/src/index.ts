@@ -30,8 +30,7 @@ const app = new Elysia()
     const user = await clerk.users.getUser(store.auth.userId);
     return { user };
   })
-
-  .listen(8000);
+  .listen(process.env.PORT!);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
