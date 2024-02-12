@@ -1,2 +1,2 @@
 # graph-gains
-A web app for tracking weight
+A web app for tracking and graphing your weight, and other metrics too.
