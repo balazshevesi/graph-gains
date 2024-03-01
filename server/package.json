@@ -8,11 +8,14 @@
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.7",
     "@elysiajs/cors": "^0.8.0",
+    "drizzle-orm": "^0.29.4",
     "elysia": "latest",
-    "elysia-clerk": "^0.3.0"
+    "elysia-clerk": "^0.3.0",
+    "postgres": "^3.4.3"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "drizzle-kit": "^0.20.14"
   },
   "module": "src/index.js"
 }

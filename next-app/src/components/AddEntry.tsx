@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import getCookie from "@/utils/getCookie";
+
 import {
   Dialog,
   DialogContent,
@@ -24,6 +26,7 @@ import { format } from "date-fns";
 export default function AddEntry() {
   const [isOpen, setIsOpen] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
+  const [weight, setWeight] = useState<number>(0);
 
   return (
     <>
@@ -59,12 +62,32 @@ export default function AddEntry() {
                   />
                 </PopoverContent>
               </Popover>
-              <Input type="Weight" placeholder="Weight" />
-              {/* <Button>Add</Button> */}
+              <Input
+                value={weight}
+                onInput={(e: any) => setWeight(e.target.value)}
+                type="Weight"
+                placeholder="Weight"
+              />
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button type="submit">Add</Button>
+            <Button
+              onClick={async () => {
+                const response = await fetch("http://localhost:8000/entry", {
+                  method: "post",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getCookie("__session")}`,
+                  },
+                  body: JSON.stringify({ date, weight: +weight }),
+                });
+                const data = await response.json();
+                console.log(data);
+              }}
+              type="submit"
+            >
+              Add
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
