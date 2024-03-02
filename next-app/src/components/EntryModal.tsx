@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import getCookie from "@/utils/getCookie";
 
 import {
@@ -29,7 +27,6 @@ import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 
 const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
-  console.log(date.toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }));
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/entry`, {
     method: "post",
     headers: {
@@ -42,15 +39,40 @@ const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
     }),
   });
   const data = await response.json();
-  // return data.content;
 };
 
-export default function AddEntryModal() {
-  const { isOpen, open, close, date, weight, setDate, setWeight } =
+const updateEntry = async ({
+  date,
+  weight,
+  id,
+}: {
+  date: Date;
+  weight: number;
+  id: number;
+}) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE!}/entry/${id}`,
+    {
+      method: "put",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getCookie("__session")}`,
+      },
+      body: JSON.stringify({
+        date: date,
+        weight: +weight!,
+      }),
+    },
+  );
+  const data = await response.json();
+};
+
+export default function EntryModal() {
+  const { isOpen, open, close, date, weight, setDate, setWeight, entryId } =
     useEntryModal();
 
   const { data, isPending, mutate } = useMutation({
-    mutationFn: makeEntry,
+    mutationFn: entryId ? updateEntry : makeEntry,
     onSuccess: () => {
       close();
       toast.success("success!");
@@ -59,16 +81,11 @@ export default function AddEntryModal() {
 
   return (
     <>
-      <Dialog
-        open={isOpen}
-        onOpenChange={() => {
-          close(false);
-          setWeight(undefined);
-          setDate(new Date());
-        }}
-      >
+      <Dialog open={isOpen} onOpenChange={() => close(false)}>
         <DialogContent>
-          <DialogTitle className="">Add new entry</DialogTitle>
+          <DialogTitle className="">
+            {entryId ? "Edit entry" : "Add new entry"}
+          </DialogTitle>
           <DialogDescription className="space-y-4 pt-2">
             <div>
               <Label className="mb-1.5 block">Date</Label>
@@ -103,20 +120,23 @@ export default function AddEntryModal() {
                 id="Weight"
                 value={weight}
                 onInput={(e: any) => setWeight(e.target.value)}
-                type="Weight"
+                type="number"
                 placeholder="Weight"
               />
             </div>
           </DialogDescription>
           <DialogFooter>
+
             <Button
               disabled={isPending}
               variant="glow"
               className=" flex items-center gap-1"
-              onClick={() => mutate({ date, weight: weight || 0 })}
+              onClick={() =>
+                mutate({ date, weight: weight || 0, id: entryId! })
+              }
               type="submit"
             >
-              Add
+              {entryId ? "Edit" : "Add"}
               {!!isPending && (
                 <Loader2Icon className=" size-5 animate-spin stroke-2" />
               )}

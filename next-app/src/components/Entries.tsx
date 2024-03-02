@@ -2,17 +2,23 @@
 
 import getCookie from "@/utils/getCookie";
 
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+
 import type { App } from "../../../server/src/index";
+import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import useEntryModal from "@/zustand/useEntryModal";
 import { edenFetch } from "@elysiajs/eden";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, setDate } from "date-fns";
 import { Loader2Icon } from "lucide-react";
 
 //@ts-ignore
 const eFetch = edenFetch<App>(process.env.NEXT_PUBLIC_API_BASE);
 
 export default function Entries() {
+  const { open, setDate, setWeight } = useEntryModal();
+
   const { data, isLoading } = useQuery({
     queryKey: ["entries"],
     queryFn: async () => {
@@ -37,17 +43,29 @@ export default function Entries() {
           data.data &&
           data.data.content.entries.map((entry) => {
             return (
-              <Card key={entry.id} className="p-4">
-                <div>{format(entry.date, "yyyy-MM-dd HH:mm")}</div>
-                <div>{entry.weight}</div>
+              <Card key={entry.id} className="flex items-center p-4">
+                <div>
+                  <div className=" mb-1 text-sm font-semibold text-gray-500">
+                    {format(entry.date, "yyyy-MM-dd HH:mm")}
+                  </div>
+                  <div className="text-lg font-medium">{entry.weight} kg</div>
+                </div>
+                <div className="ml-auto">
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => {
+                      open({ entryId: entry.id });
+                      setDate(entry.date);
+                      setWeight(+entry.weight!);
+                    }}
+                  >
+                    <EllipsisHorizontalIcon className=" size-8" />
+                  </Button>
+                </div>
               </Card>
             );
           })}
-        {/* <Card className="p-4">Entry goes here</Card>
-        <Card className="p-4">Entry goes here</Card>
-        <Card className="p-4">Entry goes here</Card>
-        <Card className="p-4">Entry goes here</Card>
-        <Card className="p-4">Entry goes here</Card> */}
       </div>
     </div>
   );

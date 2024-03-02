@@ -1,5 +1,5 @@
-import AddEntryModal from "@/components/AddEntryModal";
 import Entries from "@/components/Entries";
+import EntryModal from "@/components/EntryModal";
 import OpenEntryBtn from "@/components/OpenEntryBtn";
 import { Card } from "@/components/ui/card";
 

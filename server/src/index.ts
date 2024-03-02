@@ -12,7 +12,9 @@ const queryClient = postgres(process.env.DATABASE_URL!);
 const db = drizzle(queryClient);
 
 const app = new Elysia()
-  .use(cors())
+  //@ts-ignore
+  .use(cors({ methods: "*" }))
+
   .use(clerkPlugin())
   .get("/", async () => "hello world!")
 
@@ -26,6 +28,29 @@ const app = new Elysia()
         userId: user.id,
         date: new Date(body.date),
       });
+      return { content: { success: true } };
+    },
+    {
+      body: t.Object({
+        date: t.Any(),
+        weight: t.Number(),
+      }),
+    },
+  )
+
+  .put(
+    "/entry/:id",
+    async ({ clerk, store, set, body, params: { id } }) => {
+      if (!store.auth?.userId) return (set.status = "Unauthorized");
+      const user = await clerk.users.getUser(store.auth.userId);
+      await db
+        .update(entriesTbl)
+        .set({
+          weight: "" + body.weight,
+          userId: user.id,
+          date: new Date(body.date),
+        })
+        .where(eq(entriesTbl.id, +id));
       return { content: { success: true } };
     },
     {
