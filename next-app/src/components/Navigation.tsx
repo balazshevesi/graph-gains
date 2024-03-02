@@ -15,7 +15,7 @@ export default async function Navigation() {
 
   // if (!user) return <div>Not logged in</div>;
   return (
-    <Card className="flex rounded-none p-2">
+    <Card className="flex rounded-none p-4">
       <nav className="mx-auto flex w-full max-w-7xl items-center justify-between">
         <div>GraphGains</div>
         <div>{!!user && <UserButton />}</div>

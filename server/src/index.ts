@@ -1,5 +1,6 @@
-import { entries, users } from "../drizzle/schema";
+import { entries as entriesTbl, users as usersTbl } from "../drizzle/schema";
 import { cors } from "@elysiajs/cors";
+import { asc, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { Elysia, t } from "elysia";
@@ -14,24 +15,16 @@ const app = new Elysia()
   .use(cors())
   .use(clerkPlugin())
   .get("/", async () => "hello world!")
-  // .get("/test", async () => {
-  //   await db.insert(entries).values({
-  //     weight: "10",
-  //     userId: "123",
-  //     date: "" + new Date(),
-  //   });
-  //   return "hello world!";
-  // })
 
   .post(
     "/entry",
     async ({ clerk, store, set, body }) => {
       if (!store.auth?.userId) return (set.status = "Unauthorized");
       const user = await clerk.users.getUser(store.auth.userId);
-      await db.insert(entries).values({
+      await db.insert(entriesTbl).values({
         weight: "" + body.weight,
         userId: user.id,
-        date: "" + body.date,
+        date: new Date(body.date),
       });
       return { content: { success: true } };
     },
@@ -43,7 +36,21 @@ const app = new Elysia()
     },
   )
 
+  .get("/entries", async ({ clerk, store, set, body }) => {
+    if (!store.auth?.userId) return (set.status = "Unauthorized");
+    const user = await clerk.users.getUser(store.auth.userId);
+    const entries = await db
+      .select()
+      .from(entriesTbl)
+      .where(eq(entriesTbl.userId, user.id))
+      .orderBy(desc(entriesTbl.date));
+
+    return { content: { success: true, entries } };
+  })
+
   .listen(process.env.PORT!);
+
+export type App = typeof app;
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,

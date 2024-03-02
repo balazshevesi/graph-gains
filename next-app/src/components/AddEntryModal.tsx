@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import getCookie from "@/utils/getCookie";
 
@@ -19,27 +19,59 @@ import { PlusIcon, CalendarIcon } from "@heroicons/react/24/outline";
 
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
+import { Label } from "./ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
+import useEntryModal from "@/zustand/useEntryModal";
+import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
 
-export default function AddEntry() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [date, setDate] = useState<Date>(new Date());
-  const [weight, setWeight] = useState<number>(0);
+const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
+  console.log(date.toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }));
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/entry`, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getCookie("__session")}`,
+    },
+    body: JSON.stringify({
+      date: date,
+      weight: +weight!,
+    }),
+  });
+  const data = await response.json();
+  // return data.content;
+};
+
+export default function AddEntryModal() {
+  const { isOpen, open, close, date, weight, setDate, setWeight } =
+    useEntryModal();
+
+  const { data, isPending, mutate } = useMutation({
+    mutationFn: makeEntry,
+    onSuccess: () => {
+      close();
+      toast.success("success!");
+    },
+  });
 
   return (
     <>
-      <div className="fixed bottom-0 right-0 p-8">
-        <Button onClick={() => setIsOpen(!isOpen)}>
-          <PlusIcon className="size-8 stroke-2" />
-        </Button>
-      </div>
-      <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={() => {
+          close(false);
+          setWeight(undefined);
+          setDate(new Date());
+        }}
+      >
         <DialogContent>
           <DialogTitle className="">Add new entry</DialogTitle>
-          <DialogHeader>
-            <DialogDescription className="space-y-2">
+          <DialogDescription className="space-y-4 pt-2">
+            <div>
+              <Label className="mb-1.5 block">Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -62,31 +94,32 @@ export default function AddEntry() {
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+            <div>
+              <Label className="mb-1.5 block" htmlFor="Weight">
+                Weight
+              </Label>
               <Input
+                id="Weight"
                 value={weight}
                 onInput={(e: any) => setWeight(e.target.value)}
                 type="Weight"
                 placeholder="Weight"
               />
-            </DialogDescription>
-          </DialogHeader>
+            </div>
+          </DialogDescription>
           <DialogFooter>
             <Button
-              onClick={async () => {
-                const response = await fetch("http://localhost:8000/entry", {
-                  method: "post",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${getCookie("__session")}`,
-                  },
-                  body: JSON.stringify({ date, weight: +weight }),
-                });
-                const data = await response.json();
-                console.log(data);
-              }}
+              disabled={isPending}
+              variant="glow"
+              className=" flex items-center gap-1"
+              onClick={() => mutate({ date, weight: weight || 0 })}
               type="submit"
             >
               Add
+              {!!isPending && (
+                <Loader2Icon className=" size-5 animate-spin stroke-2" />
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

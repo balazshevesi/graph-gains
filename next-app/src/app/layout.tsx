@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import AddEntryModal from "@/components/AddEntryModal";
 import Navigation from "@/components/Navigation";
+import { Toaster } from "@/components/ui/sonner";
 
 import Providers from "./Providers";
 import "./globals.css";
@@ -23,6 +25,8 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${inter.className} bg-gray-100`}>
           <Navigation />
+          <Toaster position="bottom-center" />
+          <AddEntryModal />
           {children}
         </body>
       </html>
