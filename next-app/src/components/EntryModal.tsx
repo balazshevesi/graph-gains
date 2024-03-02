@@ -15,12 +15,14 @@ import { Input } from "@/components/ui/input";
 
 import { PlusIcon, CalendarIcon } from "@heroicons/react/24/outline";
 
+import { $refetchEntries } from "./Entries";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { Label } from "./ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import useEntryModal from "@/zustand/useEntryModal";
+import { useStore } from "@nanostores/react";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Loader2Icon } from "lucide-react";
@@ -67,7 +69,19 @@ const updateEntry = async ({
   const data = await response.json();
 };
 
+const deleteEntry = async ({ id }: { id: number }) => {
+  await fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/entry/${id}`, {
+    method: "delete",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getCookie("__session")}`,
+    },
+  });
+};
+
 export default function EntryModal() {
+  const refetchEntries = useStore($refetchEntries);
+
   const { isOpen, open, close, date, weight, setDate, setWeight, entryId } =
     useEntryModal();
 
@@ -76,6 +90,16 @@ export default function EntryModal() {
     onSuccess: () => {
       close();
       toast.success("success!");
+      refetchEntries();
+    },
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: deleteEntry,
+    onSuccess: () => {
+      close();
+      toast.success("success!");
+      refetchEntries();
     },
   });
 
@@ -126,7 +150,20 @@ export default function EntryModal() {
             </div>
           </DialogDescription>
           <DialogFooter>
-
+            {!!entryId && (
+              <Button
+                disabled={isPending}
+                variant="destructive"
+                className="mt-2 flex items-center gap-1 sm:mt-0"
+                onClick={() => deleteMut.mutate({ id: entryId! })}
+                type="submit"
+              >
+                Delete
+                {!!deleteMut.isPending && (
+                  <Loader2Icon className=" size-5 animate-spin stroke-2" />
+                )}
+              </Button>
+            )}
             <Button
               disabled={isPending}
               variant="glow"

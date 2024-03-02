@@ -61,6 +61,13 @@ const app = new Elysia()
     },
   )
 
+  .delete("/entry/:id", async ({ clerk, store, set, params: { id } }) => {
+    if (!store.auth?.userId) return (set.status = "Unauthorized");
+    const user = await clerk.users.getUser(store.auth.userId);
+    await db.delete(entriesTbl).where(eq(entriesTbl.id, +id));
+    return { content: { success: true } };
+  })
+
   .get("/entries", async ({ clerk, store, set, body }) => {
     if (!store.auth?.userId) return (set.status = "Unauthorized");
     const user = await clerk.users.getUser(store.auth.userId);

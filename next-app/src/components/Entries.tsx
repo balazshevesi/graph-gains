@@ -12,6 +12,9 @@ import { edenFetch } from "@elysiajs/eden";
 import { useQuery } from "@tanstack/react-query";
 import { format, setDate } from "date-fns";
 import { Loader2Icon } from "lucide-react";
+import { atom } from "nanostores";
+
+export const $refetchEntries = atom<Function>(() => {});
 
 //@ts-ignore
 const eFetch = edenFetch<App>(process.env.NEXT_PUBLIC_API_BASE);
@@ -19,7 +22,7 @@ const eFetch = edenFetch<App>(process.env.NEXT_PUBLIC_API_BASE);
 export default function Entries() {
   const { open, setDate, setWeight } = useEntryModal();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["entries"],
     queryFn: async () => {
       const data = await eFetch("/entries", {
@@ -28,10 +31,10 @@ export default function Entries() {
           Authorization: `Bearer ${getCookie("__session")}`,
         },
       });
-      console.log(data);
       return data;
     },
   });
+  $refetchEntries.set(refetch);
 
   return (
     <div>

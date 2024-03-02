@@ -7,7 +7,7 @@ interface UseEntryModal {
   weight: number | undefined;
   setDate: (value: Date) => void;
   setWeight: (value?: number) => void;
-  open: ({ entryId }?: { entryId?: number }) => void;
+  open: Function;
   close: Function;
 }
 
@@ -27,6 +27,7 @@ const useEntryModal = create<UseEntryModal>((set) => ({
         isOpen: true,
         entryId: entryId || undefined,
         date: entryId ? undefined : new Date(),
+        weight: undefined,
       };
     });
   },
@@ -34,9 +35,6 @@ const useEntryModal = create<UseEntryModal>((set) => ({
     set((state) => {
       return {
         isOpen: false,
-        weight: undefined,
-        entryId: undefined,
-        date: undefined,
       };
     }),
 }));
