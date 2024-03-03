@@ -35,25 +35,24 @@ export default function Entries() {
       return data;
     },
   });
+
+  if (!data || !data.data)
+    return <Loader2Icon className=" mx-auto size-8 animate-spin" />;
+  if (data.data === "Unauthorized") return <div>Unauthorized</div>;
+
   $refetchEntries.set(refetch);
 
-  const chartData = [
-    { timestamp: "2024-03-01T00:00:00Z", value: 10 },
-    { timestamp: "2024-03-02T00:00:00Z", value: 20 },
-    { timestamp: "2024-03-05T00:00:00Z", value: 15 },
-    { timestamp: "2024-03-08T00:00:00Z", value: 50 },
-    // Add more data points as needed
-  ];
+  const chartData = data.data.content.entries.map((entry) => ({
+    timestamp: new Date(entry.date).toISOString(),
+    value: entry.weight ? +entry.weight : 0,
+  }));
 
   return (
     <div>
       <div className="flex flex-col gap-4">
         {/* <Card className="h-40 p-4">graph goes here</Card> */}
-        <MainChart data={chartData || 0} />
-        {isLoading && <Loader2Icon className=" mx-auto size-8 animate-spin" />}
+        <MainChart data={chartData} />
         {data &&
-          data.data !== "Unauthorized" &&
-          data.data &&
           data.data.content.entries.map((entry) => {
             return (
               <Card key={entry.id} className="flex items-center p-4">

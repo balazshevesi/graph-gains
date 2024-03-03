@@ -67,7 +67,7 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({ data }) => {
       y: {
         title: {
           display: true,
-          text: "Value",
+          text: "kg",
         },
       },
     },
@@ -92,6 +92,7 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({ data }) => {
     },
   };
 
+  //@ts-ignore
   return <Line data={chartData} options={options} />;
 };
 

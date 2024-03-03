@@ -1,5 +1,6 @@
 import { entries as entriesTbl, users as usersTbl } from "../drizzle/schema";
 import { cors } from "@elysiajs/cors";
+import { parse } from "csv-parse/sync";
 import { asc, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
@@ -76,9 +77,51 @@ const app = new Elysia()
       .from(entriesTbl)
       .where(eq(entriesTbl.userId, user.id))
       .orderBy(desc(entriesTbl.date));
-
     return { content: { success: true, entries } };
   })
+
+  .post(
+    "/import-csv",
+    async ({ clerk, store, set, body: { file } }) => {
+      if (!store.auth?.userId) return (set.status = "Unauthorized");
+      const user = await clerk.users.getUser(store.auth.userId);
+
+      const csvTextContent = await file[0].text();
+      const parsedCsv = parse(csvTextContent, {
+        columns: true,
+        skip_empty_lines: true,
+      });
+
+      console.log(parsedCsv);
+      console.log(parsedCsv.length);
+
+      await db.insert(entriesTbl).values([
+        ...parsedCsv
+          .map((entry: { Weight: string; Date: string }) => ({
+            weight: +entry.Weight,
+            date: new Date(entry.Date),
+            userId: user.id,
+          }))
+          .filter((entry: any) => !!entry.weight),
+      ]);
+
+      // await db.insert(entriesTbl).values([
+      //   {
+      //     weight: "" + body.weight,
+      //     userId: user.id,
+      //     date: new Date(body.date),
+      //   },
+      // ]);
+
+      return { content: { success: true } };
+    },
+    {
+      type: "formdata",
+      body: t.Object({
+        file: t.Files(),
+      }),
+    },
+  )
 
   .listen(process.env.PORT!);
 
