@@ -5,6 +5,7 @@ import getCookie from "@/utils/getCookie";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
 import type { App } from "../../../server/src/index";
+import MainChart from "./MainChart";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import useEntryModal from "@/zustand/useEntryModal";
@@ -36,10 +37,19 @@ export default function Entries() {
   });
   $refetchEntries.set(refetch);
 
+  const chartData = [
+    { timestamp: "2024-03-01T00:00:00Z", value: 10 },
+    { timestamp: "2024-03-02T00:00:00Z", value: 20 },
+    { timestamp: "2024-03-05T00:00:00Z", value: 15 },
+    { timestamp: "2024-03-08T00:00:00Z", value: 50 },
+    // Add more data points as needed
+  ];
+
   return (
     <div>
       <div className="flex flex-col gap-4">
-        <Card className="h-40 p-4">graph goes here</Card>
+        {/* <Card className="h-40 p-4">graph goes here</Card> */}
+        <MainChart data={chartData || 0} />
         {isLoading && <Loader2Icon className=" mx-auto size-8 animate-spin" />}
         {data &&
           data.data !== "Unauthorized" &&
