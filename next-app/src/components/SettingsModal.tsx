@@ -67,9 +67,10 @@ export default function SettingsModal() {
         <DialogContent>
           <DialogTitle className="">Settings</DialogTitle>
           <DialogDescription className="space-y-4 pt-2">
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="picture">Upload CSV Data From MyFittnesPal</Label>
               <Input
+                className="w-full"
                 onChange={(e) => {
                   const files = e.target.files;
                   if (files && files.length > 0) setCsvFile(files[0]);

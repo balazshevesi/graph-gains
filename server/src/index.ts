@@ -95,6 +95,11 @@ const app = new Elysia()
       console.log(parsedCsv);
       console.log(parsedCsv.length);
 
+      const currentEntries = await db
+        .select()
+        .from(entriesTbl)
+        .where(eq(entriesTbl.userId, user.id));
+
       await db.insert(entriesTbl).values([
         ...parsedCsv
           .map((entry: { Weight: string; Date: string }) => ({
@@ -102,17 +107,16 @@ const app = new Elysia()
             date: new Date(entry.Date),
             userId: user.id,
           }))
-          .filter((entry: any) => !!entry.weight),
+          .filter(
+            (entry: any) =>
+              !!entry.weight &&
+              !currentEntries.some(
+                (cEntry) =>
+                  new Date(cEntry.date).toISOString() ===
+                  new Date(entry.date).toISOString(),
+              ),
+          ),
       ]);
-
-      // await db.insert(entriesTbl).values([
-      //   {
-      //     weight: "" + body.weight,
-      //     userId: user.id,
-      //     date: new Date(body.date),
-      //   },
-      // ]);
-
       return { content: { success: true } };
     },
     {
