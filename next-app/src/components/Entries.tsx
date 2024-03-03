@@ -4,7 +4,6 @@ import getCookie from "@/utils/getCookie";
 
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
-import type { App } from "../../../server/src/index";
 import MainChart from "./MainChart";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -18,7 +17,7 @@ import { atom } from "nanostores";
 export const $refetchEntries = atom<Function>(() => {});
 
 //@ts-ignore
-const eFetch = edenFetch<App>(process.env.NEXT_PUBLIC_API_BASE);
+// const eFetch = edenFetch<App>(process.env.NEXT_PUBLIC_API_BASE);
 
 export default function Entries() {
   const { open, setDate, setWeight } = useEntryModal();
@@ -26,23 +25,22 @@ export default function Entries() {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["entries"],
     queryFn: async () => {
-      const data = await eFetch("/entries", {
+      const data = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/entries`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${getCookie("__session")}`,
         },
       });
-      return data;
+      return await data.json();
     },
   });
 
-  if (!data || !data.data)
-    return <Loader2Icon className=" mx-auto size-8 animate-spin" />;
-  if (data.data === "Unauthorized") return <div>Unauthorized</div>;
+  if (!data) return <Loader2Icon className=" mx-auto size-8 animate-spin" />;
+  if (data === "Unauthorized") return <div>Unauthorized</div>;
 
   $refetchEntries.set(refetch);
 
-  const chartData = data.data.content.entries.map((entry) => ({
+  const chartData = data.content.entries.map((entry) => ({
     timestamp: new Date(entry.date).toISOString(),
     value: entry.weight ? +entry.weight : 0,
   }));
@@ -53,7 +51,7 @@ export default function Entries() {
         {/* <Card className="h-40 p-4">graph goes here</Card> */}
         <MainChart data={chartData} />
         {data &&
-          data.data.content.entries.map((entry) => {
+          data.content.entries.map((entry) => {
             return (
               <Card key={entry.id} className="flex items-center p-4">
                 <div>
