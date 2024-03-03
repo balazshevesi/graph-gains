@@ -131,7 +131,6 @@ export default function EntryModal() {
                     mode="single"
                     selected={date}
                     onSelect={(a: any) => setDate(a)}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
@@ -160,14 +159,14 @@ export default function EntryModal() {
               >
                 Delete
                 {!!deleteMut.isPending && (
-                  <Loader2Icon className=" size-5 animate-spin stroke-2" />
+                  <Loader2Icon className="size-5 animate-spin stroke-2" />
                 )}
               </Button>
             )}
             <Button
               disabled={isPending}
               variant="glow"
-              className=" flex items-center gap-1"
+              className="flex items-center gap-1"
               onClick={() =>
                 mutate({ date, weight: weight || 0, id: entryId! })
               }
@@ -175,7 +174,7 @@ export default function EntryModal() {
             >
               {entryId ? "Edit" : "Add"}
               {!!isPending && (
-                <Loader2Icon className=" size-5 animate-spin stroke-2" />
+                <Loader2Icon className="size-5 animate-spin stroke-2" />
               )}
             </Button>
           </DialogFooter>

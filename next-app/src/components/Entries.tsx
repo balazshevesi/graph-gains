@@ -55,7 +55,7 @@ export default function Entries() {
             return (
               <Card key={entry.id} className="flex items-center p-4">
                 <div>
-                  <div className=" mb-1 text-sm font-semibold text-gray-500">
+                  <div className="mb-1 text-sm font-semibold text-gray-500">
                     {format(entry.date, "yyyy-MM-dd HH:mm")}
                   </div>
                   <div className="text-lg font-medium">{entry.weight} kg</div>
