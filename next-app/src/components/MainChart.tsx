@@ -98,24 +98,19 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({ data }) => {
     // Adding the onClick event listener
     onClick: (event: any, elements: any[]) => {
       if (elements.length > 0) {
-        // Assuming the first element in the array is the one you're interested in
         const element = elements[0];
-        // Accessing specific properties of the clicked element
-        const index = element.index; // Index of the clicked data point
-        const datasetIndex = element.datasetIndex; // Dataset index, useful if you have multiple datasets
-        const label = chartData.labels[index]; // Getting the label of the clicked data point
-        const value = chartData.datasets[datasetIndex].data[index]; // Getting the value of the clicked data point
-        const id = chartData.datasets[datasetIndex].id[index]; // Getting the value of the clicked data point
+        const index = element.index;
+        const datasetIndex = element.datasetIndex;
 
-        // Here, you can add any action you want to perform on click, for example:
-        console.log(
-          `Clicked on: ${label} with value: ${value} and with id of ${id}`,
-        );
+        // get data from data point
+        const date = chartData.labels[index];
+        const value = chartData.datasets[datasetIndex].data[index];
+        const id = chartData.datasets[datasetIndex].id[index];
+
+        //act on click
         open({ entryId: id });
         setWeight(value);
-        setDate(new Date(label));
-        // Or call a function with the clicked data point details
-        // handleDataPointClick(label, value);
+        setDate(new Date(date));
       }
     },
   };

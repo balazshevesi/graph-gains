@@ -151,7 +151,7 @@ export default function EntryModal() {
           <DialogFooter>
             {!!entryId && (
               <Button
-                disabled={isPending}
+                disabled={isPending || deleteMut.isPending}
                 variant="destructive"
                 className="mt-2 flex items-center gap-1 sm:mt-0"
                 onClick={() => deleteMut.mutate({ id: entryId! })}
@@ -164,7 +164,7 @@ export default function EntryModal() {
               </Button>
             )}
             <Button
-              disabled={isPending}
+              disabled={isPending || deleteMut.isPending}
               variant="glow"
               className="flex items-center gap-1"
               onClick={() =>
