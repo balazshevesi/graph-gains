@@ -3,6 +3,7 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
 
+import useEntryModal from "@/zustand/useEntryModal";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -34,16 +35,20 @@ interface TimeSeriesChartProps {
   data: {
     timestamp: string; // Assuming ISO string format for timestamps
     value: number;
+    id: number | string;
   }[];
 }
 
 const MainChart: React.FC<TimeSeriesChartProps> = ({ data }) => {
+  const { open, setDate, setWeight } = useEntryModal();
+
   const chartData = {
     labels: data.map((d) => d.timestamp),
     datasets: [
       {
         label: "Weigth",
         data: data.map((d) => d.value),
+        id: data.map((d) => d.id),
         borderColor: "rgb(75, 192, 192)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
@@ -89,6 +94,29 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({ data }) => {
           },
         },
       },
+    },
+    // Adding the onClick event listener
+    onClick: (event: any, elements: any[]) => {
+      if (elements.length > 0) {
+        // Assuming the first element in the array is the one you're interested in
+        const element = elements[0];
+        // Accessing specific properties of the clicked element
+        const index = element.index; // Index of the clicked data point
+        const datasetIndex = element.datasetIndex; // Dataset index, useful if you have multiple datasets
+        const label = chartData.labels[index]; // Getting the label of the clicked data point
+        const value = chartData.datasets[datasetIndex].data[index]; // Getting the value of the clicked data point
+        const id = chartData.datasets[datasetIndex].id[index]; // Getting the value of the clicked data point
+
+        // Here, you can add any action you want to perform on click, for example:
+        console.log(
+          `Clicked on: ${label} with value: ${value} and with id of ${id}`,
+        );
+        open({ entryId: id });
+        setWeight(value);
+        setDate(new Date(label));
+        // Or call a function with the clicked data point details
+        // handleDataPointClick(label, value);
+      }
     },
   };
 

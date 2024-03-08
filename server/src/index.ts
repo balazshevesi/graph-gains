@@ -70,6 +70,7 @@ const app = new Elysia()
   })
 
   .get("/entries", async ({ clerk, store, set, body }) => {
+    console.log("hello");
     if (!store.auth?.userId) return (set.status = "Unauthorized");
     const user = await clerk.users.getUser(store.auth.userId);
     const entries = await db
@@ -91,9 +92,6 @@ const app = new Elysia()
         columns: true,
         skip_empty_lines: true,
       });
-
-      console.log(parsedCsv);
-      console.log(parsedCsv.length);
 
       const currentEntries = await db
         .select()

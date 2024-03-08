@@ -43,6 +43,7 @@ export default function Entries() {
   const chartData = data.content.entries.map((entry) => ({
     timestamp: new Date(entry.date).toISOString(),
     value: entry.weight ? +entry.weight : 0,
+    id: entry.id,
   }));
 
   return (
