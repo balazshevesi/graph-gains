@@ -155,11 +155,13 @@ export default function Entries() {
             Week
           </Button>
         </div>
-        <MainChart
-          showRounded={showRounded}
-          showTrendline={showTrendline}
-          data={filteredChartData}
-        />
+        <div className=" h-[50dvh] w-full">
+          <MainChart
+            showRounded={showRounded}
+            showTrendline={showTrendline}
+            data={filteredChartData}
+          />
+        </div>
         {data &&
           data.content.entries.map((entry) => {
             return (

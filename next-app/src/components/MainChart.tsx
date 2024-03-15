@@ -56,6 +56,7 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({
   const colorMin = `hsla(${primaryColor}, 0.5)`; // Assuming 0.5 opacity
 
   const chartData = {
+    // maintainAspectRatio: false,
     labels: data.map((d) => d.timestamp),
     datasets: [
       {
@@ -85,6 +86,9 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({
   };
 
   const options = {
+    // aspectRatio: 1.5,
+    maintainAspectRatio: false,
+
     scales: {
       x: {
         type: "time",
