@@ -11,8 +11,8 @@ Backend is built with elysia.js, and the frontend is built with next.js, the dat
 - [ ] Add filter by date to the chart
 - [ ] Add images to entries (think about icloud or google photos integration?)
 - [ ] Add compare screen with images
-- [ ] Fix chart size on small screens
 - [ ] Fix backend databse connection timeout bug
 - [ ] Fix form and fix validation, also improve ux
+- [x] Fix chart size on small screens
 - [x] fix db design
 - [x] install, learn, understand, and configure prisma orm //nahh

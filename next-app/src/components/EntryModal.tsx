@@ -143,6 +143,7 @@ export default function EntryModal() {
                 id="Weight"
                 value={weight}
                 onInput={(e: any) => setWeight(e.target.value)}
+                inputMode="decimal"
                 type="number"
                 placeholder="Weight"
               />
