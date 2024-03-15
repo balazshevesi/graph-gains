@@ -35,6 +35,7 @@ ChartJS.register(
 
 interface TimeSeriesChartProps {
   showTrendline: boolean;
+  showRounded: boolean;
   data: {
     timestamp: string; // Assuming ISO string format for timestamps
     value: number;
@@ -42,25 +43,39 @@ interface TimeSeriesChartProps {
   }[];
 }
 
-const MainChart: React.FC<TimeSeriesChartProps> = ({ data, showTrendline }) => {
+const MainChart: React.FC<TimeSeriesChartProps> = ({
+  data,
+  showTrendline,
+  showRounded,
+}) => {
   const { open, setDate, setWeight } = useEntryModal();
+
+  const primaryColor = getComputedStyle(document.documentElement)
+    .getPropertyValue("--primary")
+    .trim();
+  const colorMin = `hsla(${primaryColor}, 0.5)`; // Assuming 0.5 opacity
 
   const chartData = {
     labels: data.map((d) => d.timestamp),
     datasets: [
       {
+        // pointRadius: 4,
+        // pointHoverRadius: 6,
+
         label: "Weigth",
         data: data.map((d) => d.value),
         id: data.map((d) => d.id),
-        borderColor: "rgb(75, 192, 192)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: `hsl(${primaryColor})`,
+
+        backgroundColor: `rgba(0,0,0,0)`,
         fill: true,
+        tension: showRounded ? 0.5 : 0,
 
         trendlineLinear: {
-          colorMin: `rgb(75, 192, 192,${showTrendline ? "1" : "0"})`,
-          colorMax: `rgb(75, 192, 192,${showTrendline ? "1" : "0"})`,
+          colorMin: `hsla(${primaryColor})`,
+          colorMax: `hsl(${primaryColor})`,
           lineStyle: "dotted",
-          width: 2,
+          width: showTrendline ? 2 : 0.0000000000001,
           // xAxisKey: "time"(optional),
           // yAxisKey: "usage"(optional),
           // projection: true,
@@ -91,9 +106,12 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({ data, showTrendline }) => {
     },
     plugins: {
       legend: {
-        display: true,
+        display: false, //lets the user switch between datasets
       },
       tooltip: {
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        titleColor: "black",
+        bodyColor: "black",
         callbacks: {
           label: function (context: any) {
             let label = context.dataset.label || "";

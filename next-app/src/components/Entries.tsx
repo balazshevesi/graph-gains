@@ -32,6 +32,7 @@ function addDays(date: date, daysToAdd: number) {
 export default function Entries() {
   const [selectedView, setSelectedView] = useState("all");
   const [showTrendline, setShowTrendline] = useState(false);
+  const [showRounded, setShowRounded] = useState(false);
 
   const { open, setDate, setWeight } = useEntryModal();
 
@@ -67,7 +68,15 @@ export default function Entries() {
         new Date(entry.timestamp) >
         addDays(
           now,
-          selectedView === "month" ? -30 : selectedView === "week" ? -7 : 0,
+          selectedView === "month"
+            ? -30
+            : selectedView === "week"
+              ? -7
+              : selectedView === "6 months"
+                ? -168
+                : selectedView === "year"
+                  ? -360
+                  : 0,
         ),
     );
     return filteredData;
@@ -78,11 +87,26 @@ export default function Entries() {
 
   return (
     <div>
-      <div className="flex flex-col  gap-4">
-        <div className="flex items-center justify-end gap-3">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-3 overflow-x-auto p-2">
+          <div className="mr-auto" />
           <div className="flex items-center space-x-2">
             <Checkbox
-              className=" rounded"
+              className="rounded"
+              id="showRounded"
+              checked={showRounded}
+              onCheckedChange={(e: boolean) => setShowRounded(e)}
+            />
+            <label
+              htmlFor="showRounded"
+              className="text-sm font-medium leading-none"
+            >
+              Rounded
+            </label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              className="rounded"
               id="showTrendLine"
               checked={showTrendline}
               onCheckedChange={(e: boolean) => setShowTrendline(e)}
@@ -94,13 +118,27 @@ export default function Entries() {
               Trendline
             </label>
           </div>
-
           <Button
             size="sm"
             onClick={() => setSelectedView("all")}
             variant={selectedView === "all" ? "outline" : "secondary"}
           >
             All
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={() => setSelectedView("year")}
+            variant={selectedView === "year" ? "outline" : "secondary"}
+          >
+            Year
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setSelectedView("6 months")}
+            variant={selectedView === "6 months" ? "outline" : "secondary"}
+          >
+            6 months
           </Button>
           <Button
             size="sm"
@@ -117,7 +155,11 @@ export default function Entries() {
             Week
           </Button>
         </div>
-        <MainChart showTrendline={showTrendline} data={filteredChartData} />
+        <MainChart
+          showRounded={showRounded}
+          showTrendline={showTrendline}
+          data={filteredChartData}
+        />
         {data &&
           data.content.entries.map((entry) => {
             return (
