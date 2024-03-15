@@ -17,6 +17,7 @@ import {
   TimeScale,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
+import chartTrendline from "chartjs-plugin-trendline";
 
 // Register the components we will need from Chart.js
 ChartJS.register(
@@ -29,9 +30,11 @@ ChartJS.register(
   Filler,
   Legend,
   TimeScale,
+  chartTrendline,
 );
 
 interface TimeSeriesChartProps {
+  showTrendline: boolean;
   data: {
     timestamp: string; // Assuming ISO string format for timestamps
     value: number;
@@ -39,7 +42,7 @@ interface TimeSeriesChartProps {
   }[];
 }
 
-const MainChart: React.FC<TimeSeriesChartProps> = ({ data }) => {
+const MainChart: React.FC<TimeSeriesChartProps> = ({ data, showTrendline }) => {
   const { open, setDate, setWeight } = useEntryModal();
 
   const chartData = {
@@ -52,6 +55,16 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({ data }) => {
         borderColor: "rgb(75, 192, 192)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
+
+        trendlineLinear: {
+          colorMin: `rgb(75, 192, 192,${showTrendline ? "1" : "0"})`,
+          colorMax: `rgb(75, 192, 192,${showTrendline ? "1" : "0"})`,
+          lineStyle: "dotted",
+          width: 2,
+          // xAxisKey: "time"(optional),
+          // yAxisKey: "usage"(optional),
+          // projection: true,
+        },
       },
     ],
   };
