@@ -125,7 +125,6 @@ export default function Entries() {
           >
             All
           </Button>
-
           <Button
             size="sm"
             onClick={() => setSelectedView("year")}

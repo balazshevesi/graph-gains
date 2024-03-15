@@ -70,7 +70,7 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({
 
         backgroundColor: `rgba(0,0,0,0)`,
         fill: true,
-        tension: showRounded ? 0.5 : 0,
+        tension: showRounded ? 0.5 : 0.01,
 
         trendlineLinear: {
           colorMin: `hsla(${primaryColor})`,
