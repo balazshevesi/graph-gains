@@ -154,7 +154,7 @@ export default function Entries() {
             Week
           </Button>
         </div>
-        <div className=" h-[50dvh] w-full">
+        <div className="h-[50vh] w-full">
           <MainChart
             showRounded={showRounded}
             showTrendline={showTrendline}

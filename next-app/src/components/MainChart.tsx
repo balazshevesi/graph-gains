@@ -18,6 +18,7 @@ import {
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import chartTrendline from "chartjs-plugin-trendline";
+import zoomPlugin from "chartjs-plugin-zoom";
 
 // Register the components we will need from Chart.js
 ChartJS.register(
@@ -31,6 +32,7 @@ ChartJS.register(
   Legend,
   TimeScale,
   chartTrendline,
+  zoomPlugin,
 );
 
 interface TimeSeriesChartProps {
@@ -109,6 +111,10 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({
       },
     },
     plugins: {
+      zoom: {
+        zoom: { wheel: { enabled: true, speed: 0.1 } },
+        pan: { enabled: true },
+      },
       legend: {
         display: false, //lets the user switch between datasets
       },

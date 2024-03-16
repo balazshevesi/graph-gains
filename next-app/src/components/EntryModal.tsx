@@ -37,7 +37,7 @@ const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
     },
     body: JSON.stringify({
       date: date,
-      weight: +weight!,
+      weight: +("" + weight).replace(",", "."),
     }),
   });
   const data = await response.json();
@@ -62,7 +62,7 @@ const updateEntry = async ({
       },
       body: JSON.stringify({
         date: date,
-        weight: +weight!,
+        weight: +("" + weight).replace(",", "."),
       }),
     },
   );
