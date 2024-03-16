@@ -112,7 +112,10 @@ const MainChart: React.FC<TimeSeriesChartProps> = ({
     },
     plugins: {
       zoom: {
-        zoom: { wheel: { enabled: true, speed: 0.1 } },
+        zoom: {
+          pinch: { enabled: true },
+          wheel: { enabled: true, speed: 0.1 },
+        },
         pan: { enabled: true },
       },
       legend: {
