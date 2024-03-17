@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import getCookie from "@/utils/getCookie";
 
 import {
@@ -28,7 +30,13 @@ import { format } from "date-fns";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 
-const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
+const makeEntry = async ({
+  date,
+  weight,
+}: {
+  date: Date;
+  weight: string | number;
+}) => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/entry`, {
     method: "post",
     headers: {
@@ -49,7 +57,7 @@ const updateEntry = async ({
   id,
 }: {
   date: Date;
-  weight: number;
+  weight: string | number;
   id: number;
 }) => {
   const response = await fetch(
@@ -84,6 +92,7 @@ export default function EntryModal() {
 
   const { isOpen, open, close, date, weight, setDate, setWeight, entryId } =
     useEntryModal();
+  console.log(weight);
 
   const { data, isPending, mutate } = useMutation({
     mutationFn: entryId ? updateEntry : makeEntry,
@@ -142,9 +151,14 @@ export default function EntryModal() {
               <Input
                 id="Weight"
                 value={weight}
-                onInput={(e: any) => setWeight(e.target.value)}
+                onInput={(e: any) => {
+                  const newValue = e.target.value.replace(",", ".");
+                  if (/^\d*\.?\d*$/.test(newValue)) {
+                    setWeight(e.target.value);
+                  }
+                }}
                 inputMode="decimal"
-                type="number"
+                // type="number"
                 placeholder="Weight"
               />
             </div>
