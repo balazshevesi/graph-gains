@@ -4,9 +4,9 @@ interface UseEntryModal {
   isOpen: boolean;
   date: Date;
   entryId: number | undefined;
-  weight: string | undefined;
+  weight: string | number | undefined;
   setDate: (value: Date) => void;
-  setWeight: (value?: string) => void;
+  setWeight: (value?: number) => void;
   open: Function;
   close: Function;
 }
@@ -20,7 +20,7 @@ const useEntryModal = create<UseEntryModal>((set) => ({
     set((state) => {
       return { date: value };
     }),
-  setWeight: (value?: string) => set((state) => ({ weight: value })),
+  setWeight: (value?: number | string) => set((state) => ({ weight: value })),
   open: ({ entryId }: { entryId?: number } = {}) => {
     return set((state) => {
       return {

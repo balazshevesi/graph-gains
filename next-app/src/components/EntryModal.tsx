@@ -30,13 +30,7 @@ import { format } from "date-fns";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 
-const makeEntry = async ({
-  date,
-  weight,
-}: {
-  date: Date;
-  weight: string | number;
-}) => {
+const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/entry`, {
     method: "post",
     headers: {
@@ -57,7 +51,7 @@ const updateEntry = async ({
   id,
 }: {
   date: Date;
-  weight: string | number;
+  weight: number;
   id: number;
 }) => {
   const response = await fetch(
@@ -92,6 +86,7 @@ export default function EntryModal() {
 
   const { isOpen, open, close, date, weight, setDate, setWeight, entryId } =
     useEntryModal();
+
   console.log(weight);
 
   const { data, isPending, mutate } = useMutation({
@@ -154,7 +149,7 @@ export default function EntryModal() {
                 onInput={(e: any) => {
                   const newValue = e.target.value.replace(",", ".");
                   if (/^\d*\.?\d*$/.test(newValue)) {
-                    setWeight(e.target.value);
+                    setWeight(newValue);
                   }
                 }}
                 inputMode="decimal"
@@ -183,7 +178,7 @@ export default function EntryModal() {
               variant="glow"
               className="flex items-center gap-1"
               onClick={() =>
-                mutate({ date, weight: weight || 0, id: entryId! })
+                mutate({ date, weight: +weight! || 0, id: entryId! })
               }
               type="submit"
             >
