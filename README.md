@@ -2,7 +2,9 @@
 
 A web app for tracking and graphing your mainly your weight, but other metrics too.
 
-Backend is built with elysia.js, and the frontend is built with next.js, the databse is postgresql
+Backend is built with elysia.js, and the frontend is built with next.js, the databse is postgresql.
+
+Eventually i want to also build a native app.
 
 # TODO
 
