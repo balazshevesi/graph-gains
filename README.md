@@ -8,6 +8,8 @@ Eventually i want to also build a native app.
 
 # TODO
 
+- [ ] Fix edenTreaty implementation (problems with versions bruhhhh)
+
 - [ ] Make optimistic update effect, then add error toast or some shit
 - [ ] Add infinatescroll / pagination
 - [ ] Add filter by date to the chart
