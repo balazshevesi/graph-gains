@@ -13,10 +13,10 @@ const queryClient = postgres(process.env.DATABASE_URL!);
 const db = drizzle(queryClient);
 
 const app = new Elysia()
-  //@ts-ignore
+
+  // .use(clerkPlugin())
   .use(cors({ methods: "*" }))
 
-  .use(clerkPlugin())
   .get("/", async () => "hello world!")
 
   .post(
@@ -35,6 +35,7 @@ const app = new Elysia()
       body: t.Object({
         date: t.Any(),
         weight: t.Number(),
+        images: t.Array(t.String()),
       }),
     },
   )
@@ -58,6 +59,7 @@ const app = new Elysia()
       body: t.Object({
         date: t.Any(),
         weight: t.Number(),
+        images: t.Array(t.String()),
       }),
     },
   )
@@ -124,7 +126,6 @@ const app = new Elysia()
       }),
     },
   )
-
   .listen(process.env.PORT!);
 
 export type App = typeof app;
