@@ -9,11 +9,18 @@ interface UseEntryModal {
   setWeight: (value?: number) => void;
   open: Function;
   close: Function;
+  images: string[];
+  setImages: (value: string[]) => void;
 }
 
 const useEntryModal = create<UseEntryModal>((set) => ({
   isOpen: false,
   date: new Date(),
+  images: ["", ""],
+  setImages: (value: string[]) =>
+    set((state) => {
+      return { images: value };
+    }),
   weight: undefined,
   entryId: undefined,
   setDate: (value: Date) =>
@@ -24,6 +31,7 @@ const useEntryModal = create<UseEntryModal>((set) => ({
   open: ({ entryId }: { entryId?: number } = {}) => {
     return set((state) => {
       return {
+        images: [],
         isOpen: true,
         entryId: entryId || undefined,
         date: entryId ? undefined : new Date(),

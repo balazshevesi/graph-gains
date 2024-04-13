@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useMemo } from "react";
 
 import app from "@/utils/edenTreaty";
@@ -16,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-import { PlusIcon, CalendarIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, CalendarIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { $refetchEntries } from "./Entries";
 import { Button } from "./ui/button";
@@ -31,9 +33,14 @@ import { format } from "date-fns";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 
-const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
+interface MakeEntry {
+  date: Date;
+  weight: number;
+  images: string[];
+}
+const makeEntry = async ({ date, weight, images }: MakeEntry) => {
   const { data, error } = await app.entry.post(
-    { date, weight },
+    { date, weight, images },
     { headers: { Authorization: `Bearer ${getCookie("__session")}` } },
   );
 };
@@ -41,13 +48,14 @@ const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
 interface UpdateEntry {
   date: Date;
   weight: number;
+  images: string[];
   id: number;
 }
-const updateEntry = async ({ date, weight, id }: UpdateEntry) => {
+const updateEntry = async ({ date, weight, id, images }: UpdateEntry) => {
   const { data, error } = await app
     .entry({ id })
     .put(
-      { date, weight },
+      { date, weight, images },
       { headers: { Authorization: `Bearer ${getCookie("__session")}` } },
     );
 };
@@ -55,16 +63,27 @@ const updateEntry = async ({ date, weight, id }: UpdateEntry) => {
 const deleteEntry = async ({ id }: { id: number }) => {
   const { data, error } = await app
     .entry({ id })
-    .delete({ headers: { Authorization: `Bearer ${getCookie("__session")}` } });
+    .delete(
+      {},
+      { headers: { Authorization: `Bearer ${getCookie("__session")}` } },
+    );
 };
 
 export default function EntryModal() {
   const refetchEntries = useStore($refetchEntries);
 
-  const { isOpen, open, close, date, weight, setDate, setWeight, entryId } =
-    useEntryModal();
-
-  console.log(weight);
+  const {
+    isOpen,
+    open,
+    close,
+    date,
+    weight,
+    setDate,
+    setWeight,
+    entryId,
+    images,
+    setImages,
+  } = useEntryModal();
 
   const { data, isPending, mutate } = useMutation({
     mutationFn: entryId ? updateEntry : makeEntry,
@@ -130,9 +149,69 @@ export default function EntryModal() {
                   }
                 }}
                 inputMode="decimal"
-                // type="number"
                 placeholder="Weight"
               />
+            </div>
+            <div>
+              <Label className="mb-1.5 block" htmlFor="Images">
+                Images
+              </Label>
+              <div className="space-y-2">
+                {images.map((path, index) => (
+                  <div
+                    className="flex items-center justify-center gap-2"
+                    key={index}
+                  >
+                    <Input
+                      id="Images"
+                      value={path}
+                      onInput={(e: any) => {
+                        setImages(
+                          images.map((statePath, stateIndex) =>
+                            stateIndex === index ? e.target.value : statePath,
+                          ),
+                        );
+                      }}
+                      placeholder="Path"
+                    />
+
+                    {!!path && (
+                      <a
+                        href={path}
+                        target="_blank"
+                        className="flex size-9 items-center justify-center"
+                      >
+                        <img
+                          src={path}
+                          alt=""
+                          className="size-9 rounded-md"
+                        ></img>
+                      </a>
+                    )}
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      onClick={() =>
+                        setImages(
+                          images.filter((_, stateIndex) =>
+                            stateIndex === index ? false : true,
+                          ),
+                        )
+                      }
+                    >
+                      <XMarkIcon className=" size-6 stroke-2" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <Button
+                className="mt-2 w-full"
+                variant="secondary"
+                size="sm"
+                onClick={() => setImages([...images, ""])}
+              >
+                <PlusIcon className=" size-6 stroke-2" />
+              </Button>
             </div>
           </DialogDescription>
           <DialogFooter>
@@ -155,7 +234,7 @@ export default function EntryModal() {
               variant="glow"
               className="flex items-center gap-1"
               onClick={() =>
-                mutate({ date, weight: +weight! || 0, id: entryId! })
+                mutate({ date, weight: +weight! || 0, id: entryId!, images })
               }
               type="submit"
             >

@@ -11,11 +11,11 @@ Eventually i want to also build a native app.
 
 - [ ] Make optimistic update effect, then add error toast or some shit
 - [ ] Add infinatescroll / pagination
-- [ ] Add filter by date to the chart
 - [ ] Add images to entries (think about icloud or google photos integration?)
 - [ ] Add compare screen with images
 - [ ] Fix backend databse connection timeout bug
 - [ ] Fix form and fix validation, also improve ux
+- [x] Add filter by date to the chart
 - [x] Fix edenTreaty implementation (problems with versions bruhhhh)
 - [x] Fix chart size on small screens
 - [x] fix db design

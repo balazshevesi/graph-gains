@@ -1,16 +1,18 @@
-import { entries as entriesTbl, users as usersTbl } from "../drizzle/schema";
+import { entries as entriesTbl, images } from "../drizzle/schema";
+import { entries } from "./../drizzle/schema";
+import * as schema from "./../drizzle/schema";
+import * as schemaRelations from "./../drizzle/schemaRelations";
 import { cors } from "@elysiajs/cors";
 import { parse } from "csv-parse/sync";
 import { asc, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { Elysia, t } from "elysia";
 import { clerkPlugin } from "elysia-clerk";
 import postgres from "postgres";
 
 // for query purposes
 const queryClient = postgres(process.env.DATABASE_URL!);
-const db = drizzle(queryClient);
+const db = drizzle(queryClient, { schema: { ...schema, ...schemaRelations } });
 
 const app = new Elysia()
   .use(cors({ methods: "*" }))
@@ -22,17 +24,27 @@ const app = new Elysia()
     async ({ clerk, store, set, body }) => {
       if (!store.auth?.userId) return (set.status = "Unauthorized");
       const user = await clerk.users.getUser(store.auth.userId);
-      await db.insert(entriesTbl).values({
-        weight: "" + body.weight,
-        userId: user.id,
-        date: new Date(body.date),
-      });
+      const [inserted] = await db
+        .insert(entriesTbl)
+        .values({
+          weight: "" + body.weight,
+          userId: user.id,
+          date: new Date(body.date),
+        })
+        .returning();
+
+      if (body.images)
+        await db
+          .insert(images)
+          .values(body.images.map((path) => ({ path, entryId: +inserted.id })));
+
       return { content: { success: true } };
     },
     {
       body: t.Object({
         date: t.Any(),
         weight: t.Number(),
+        images: t.Optional(t.Array(t.String())),
       }),
     },
   )
@@ -50,12 +62,20 @@ const app = new Elysia()
           date: new Date(body.date),
         })
         .where(eq(entriesTbl.id, +id));
+
+      if (body.images) await db.delete(images).where(eq(images.entryId, +id));
+      if (body.images)
+        await db
+          .insert(images)
+          .values(body.images.map((path) => ({ path, entryId: +id })));
+
       return { content: { success: true } };
     },
     {
       body: t.Object({
         date: t.Any(),
         weight: t.Number(),
+        images: t.Optional(t.Array(t.String())),
       }),
     },
   )
@@ -68,14 +88,18 @@ const app = new Elysia()
   })
 
   .get("/entries", async ({ clerk, store, set, body }) => {
-    console.log("hello");
     if (!store.auth?.userId) return (set.status = "Unauthorized");
     const user = await clerk.users.getUser(store.auth.userId);
-    const entries = await db
-      .select()
-      .from(entriesTbl)
-      .where(eq(entriesTbl.userId, user.id))
-      .orderBy(desc(entriesTbl.date));
+    // const entries = await db
+    //   .select()
+    //   .from(entriesTbl)
+    //   .where(eq(entriesTbl.userId, user.id))
+    //   .orderBy(desc(entriesTbl.date));
+    const entries = await db.query.entries.findMany({
+      where: eq(entriesTbl.userId, user.id),
+      orderBy: desc(entriesTbl.date),
+      with: { images: true },
+    });
     return { content: { success: true, entries } };
   })
 

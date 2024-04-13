@@ -1,12 +1,15 @@
 "use client";
 
+import { headers } from "next/headers";
+
 import { useMemo, useState } from "react";
 
+import app from "@/utils/edenTreaty";
 import getCookie from "@/utils/getCookie";
 
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { EllipsisHorizontalIcon, PhotoIcon } from "@heroicons/react/24/outline";
 
 import MainChart from "./MainChart";
 import { Button } from "./ui/button";
@@ -20,10 +23,7 @@ import { atom } from "nanostores";
 
 export const $refetchEntries = atom<Function>(() => {});
 
-//@ts-ignore
-// const eFetch = edenFetch<App>(process.env.NEXT_PUBLIC_API_BASE);
-
-function addDays(date: date, daysToAdd: number) {
+function addDays(date: Date, daysToAdd: number) {
   const result = new Date(date);
   result.setDate(result.getDate() + daysToAdd);
   return result;
@@ -34,18 +34,15 @@ export default function Entries() {
   const [showTrendline, setShowTrendline] = useState(false);
   const [showRounded, setShowRounded] = useState(false);
 
-  const { open, setDate, setWeight } = useEntryModal();
+  const { open, setDate, setWeight, setImages } = useEntryModal();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["entries"],
     queryFn: async () => {
-      const data = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/entries`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getCookie("__session")}`,
-        },
+      const { data } = await app.entries.get({
+        headers: { Authorization: `Bearer ${getCookie("__session")}` },
       });
-      return await data.json();
+      return data;
     },
   });
   $refetchEntries.set(refetch);
@@ -60,8 +57,9 @@ export default function Entries() {
   }, [data]);
 
   const filteredChartData = useMemo(() => {
+    if (!chartData || !data || data === "Unauthorized") return;
+
     const now = new Date();
-    if (!data || data === "Unauthorized") return;
     if (selectedView === "all") return chartData;
     const filteredData = chartData.filter(
       (entry) =>
@@ -158,7 +156,7 @@ export default function Entries() {
           <MainChart
             showRounded={showRounded}
             showTrendline={showTrendline}
-            data={filteredChartData}
+            data={filteredChartData || []}
           />
         </div>
         {data &&
@@ -171,17 +169,23 @@ export default function Entries() {
                   </div>
                   <div className="text-lg font-medium">{entry.weight} kg</div>
                 </div>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-4">
+                  {!!entry.images.length && (
+                    <div>
+                      <PhotoIcon className="size-8" />
+                    </div>
+                  )}
                   <Button
                     size="icon"
                     variant="secondary"
                     onClick={() => {
                       open({ entryId: entry.id });
+                      setImages(entry.images.map(({ path }) => path));
                       setDate(entry.date);
                       setWeight(+entry.weight!);
                     }}
                   >
-                    <EllipsisHorizontalIcon className=" size-8" />
+                    <EllipsisHorizontalIcon className="size-8" />
                   </Button>
                 </div>
               </Card>
