@@ -8,7 +8,6 @@ Eventually i want to also build a native app.
 
 # TODO
 
-- [ ] Fix edenTreaty implementation (problems with versions bruhhhh)
 
 - [ ] Make optimistic update effect, then add error toast or some shit
 - [ ] Add infinatescroll / pagination
@@ -17,6 +16,7 @@ Eventually i want to also build a native app.
 - [ ] Add compare screen with images
 - [ ] Fix backend databse connection timeout bug
 - [ ] Fix form and fix validation, also improve ux
+- [x] Fix edenTreaty implementation (problems with versions bruhhhh)
 - [x] Fix chart size on small screens
 - [x] fix db design
 - [x] install, learn, understand, and configure prisma orm //nahh

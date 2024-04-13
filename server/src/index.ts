@@ -13,9 +13,7 @@ const queryClient = postgres(process.env.DATABASE_URL!);
 const db = drizzle(queryClient);
 
 const app = new Elysia()
-  //@ts-ignore
   .use(cors({ methods: "*" }))
-
   .use(clerkPlugin())
   .get("/", async () => "hello world!")
 

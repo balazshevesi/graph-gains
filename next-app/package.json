@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.8",
-    "@elysiajs/eden": "^0.8.1",
+    "@elysiajs/eden": "^1.0.11",
     "@faker-js/faker": "^8.4.1",
     "@heroicons/react": "^2.1.1",
     "@material-tailwind/react": "^2.1.9",
@@ -49,6 +49,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "elysia": "^1.0.13",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
     "postcss": "^8",

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 
+import app from "@/utils/edenTreaty";
 import getCookie from "@/utils/getCookie";
 
 import {
@@ -31,54 +32,30 @@ import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 
 const makeEntry = async ({ date, weight }: { date: Date; weight: number }) => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/entry`, {
-    method: "post",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${getCookie("__session")}`,
-    },
-    body: JSON.stringify({
-      date: date,
-      weight: +("" + weight).replace(",", "."),
-    }),
-  });
-  const data = await response.json();
+  const { data, error } = await app.entry.post(
+    { date, weight },
+    { headers: { Authorization: `Bearer ${getCookie("__session")}` } },
+  );
 };
 
-const updateEntry = async ({
-  date,
-  weight,
-  id,
-}: {
+interface UpdateEntry {
   date: Date;
   weight: number;
   id: number;
-}) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE!}/entry/${id}`,
-    {
-      method: "put",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getCookie("__session")}`,
-      },
-      body: JSON.stringify({
-        date: date,
-        weight: +("" + weight).replace(",", "."),
-      }),
-    },
-  );
-  const data = await response.json();
+}
+const updateEntry = async ({ date, weight, id }: UpdateEntry) => {
+  const { data, error } = await app
+    .entry({ id })
+    .put(
+      { date, weight },
+      { headers: { Authorization: `Bearer ${getCookie("__session")}` } },
+    );
 };
 
 const deleteEntry = async ({ id }: { id: number }) => {
-  await fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/entry/${id}`, {
-    method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${getCookie("__session")}`,
-    },
-  });
+  const { data, error } = await app
+    .entry({ id })
+    .delete({ headers: { Authorization: `Bearer ${getCookie("__session")}` } });
 };
 
 export default function EntryModal() {
