@@ -15,7 +15,6 @@ import MainChart from "./MainChart";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import useEntryModal from "@/zustand/useEntryModal";
-import { edenFetch } from "@elysiajs/eden";
 import { useQuery } from "@tanstack/react-query";
 import { format, setDate } from "date-fns";
 import { Loader2Icon } from "lucide-react";
