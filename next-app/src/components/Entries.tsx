@@ -73,7 +73,9 @@ export default function Entries() {
                 ? -168
                 : selectedView === "year"
                   ? -360
-                  : 0,
+                  : selectedView === "two weeks"
+                    ? -14
+                    : 0,
         ),
     );
     return filteredData;
@@ -142,6 +144,13 @@ export default function Entries() {
             variant={selectedView === "month" ? "outline" : "secondary"}
           >
             Month
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setSelectedView("two weeks")}
+            variant={selectedView === "two weeks" ? "outline" : "secondary"}
+          >
+            Two Weeks
           </Button>
           <Button
             size="sm"
