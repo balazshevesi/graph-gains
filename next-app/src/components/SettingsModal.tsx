@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import app from "@/utils/edenTreaty";
 import getCookie from "@/utils/getCookie";
 
 import { CalendarIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
@@ -46,11 +47,38 @@ export default function SettingsModal() {
     return await response.json();
   };
 
+  const downloadFile = async () => {
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/download`, {
+      headers: { Authorization: `Bearer ${getCookie("__session")}` },
+      method: "get",
+      mode: "no-cors",
+    })
+      .then((res) => res.blob())
+      .then((res) => {
+        const aElement = document.createElement("a");
+        aElement.setAttribute("download", "fileName.csv");
+        const href = URL.createObjectURL(res);
+        aElement.href = href;
+        aElement.setAttribute("target", "_blank");
+        aElement.click();
+        URL.revokeObjectURL(href);
+      });
+  };
+
   const [isOpen, setIsOpen] = useState(false);
   const [csvFile, setCsvFile] = useState<File>();
 
   const { data, isPending, mutate } = useMutation({
     mutationFn: uploadFile,
+    onSuccess: () => {
+      setIsOpen(false);
+      toast.success("success!");
+      refetchEntries();
+    },
+  });
+
+  const downloadMut = useMutation({
+    mutationFn: downloadFile,
     onSuccess: () => {
       setIsOpen(false);
       toast.success("success!");
@@ -67,7 +95,7 @@ export default function SettingsModal() {
         <DialogContent>
           <DialogTitle className="">Settings</DialogTitle>
           <DialogDescription className="space-y-4 pt-2">
-            <div className="grid w-full items-center gap-1.5">
+            <div className="flex w-full items-center gap-1.5 gap-2">
               <Label htmlFor="picture">Upload CSV Data From MyFittnesPal</Label>
               <Input
                 className="w-full"
@@ -79,22 +107,35 @@ export default function SettingsModal() {
                 type="file"
                 accept=".csv"
               />
+              <Button
+                disabled={isPending}
+                variant="glow"
+                className=" flex items-center gap-1"
+                onClick={() => mutate({ csvFile })}
+                type="submit"
+              >
+                Upload
+                {!!isPending && (
+                  <Loader2Icon className=" size-5 animate-spin stroke-2" />
+                )}
+              </Button>
+            </div>
+            <div className="flex w-full items-center gap-1.5 gap-2">
+              <Label htmlFor="picture">Download data</Label>
+              <Button
+                disabled={isPending}
+                variant="glow"
+                className=" flex items-center gap-1"
+                onClick={() => downloadMut.mutate()}
+              >
+                Download
+                {!!isPending && (
+                  <Loader2Icon className="size-5 animate-spin stroke-2" />
+                )}
+              </Button>
             </div>
           </DialogDescription>
-          <DialogFooter>
-            <Button
-              disabled={isPending}
-              variant="glow"
-              className=" flex items-center gap-1"
-              onClick={() => mutate({ csvFile })}
-              type="submit"
-            >
-              Upload
-              {!!isPending && (
-                <Loader2Icon className=" size-5 animate-spin stroke-2" />
-              )}
-            </Button>
-          </DialogFooter>
+          <DialogFooter></DialogFooter>
         </DialogContent>
       </Dialog>
     </>

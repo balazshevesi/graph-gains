@@ -9,6 +9,8 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { Elysia, t } from "elysia";
 import { clerkPlugin } from "elysia-clerk";
 import postgres from "postgres";
+import { staticPlugin } from '@elysiajs/static'
+
 
 // for query purposes
 const queryClient = postgres(process.env.DATABASE_URL!);
@@ -17,6 +19,8 @@ const db = drizzle(queryClient, { schema: { ...schema, ...schemaRelations } });
 const app = new Elysia()
   .use(cors({ methods: "*" }))
   .use(clerkPlugin())
+  .use(staticPlugin())
+
   .get("/", async () => "hello world!")
 
   .post(
@@ -146,6 +150,20 @@ const app = new Elysia()
       }),
     },
   )
+  .get("/download", async ({ clerk, store, set, body }) => {
+    if (!store.auth?.userId) return (set.status = "Unauthorized");
+    const user = await clerk.users.getUser(store.auth.userId);
+    const entries = await db.query.entries.findMany({
+      where: eq(entriesTbl.userId, user.id),
+      orderBy: desc(entriesTbl.date),
+      with: { images: true },
+    });
+    
+    const csvContent = jsonToCsv(entries)
+    await Bun.write("/tmp/123.csv", csvContent)
+    return Bun.file("/tmp/123.csv")
+
+  })
 
   .listen(process.env.PORT!);
 
@@ -154,3 +172,93 @@ export type App = typeof app;
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
 );
+
+
+
+
+function jsonToCsv(entries) {
+  if (!entries || !Array.isArray(entries)) {
+      throw new Error('Invalid input: entries should be an array');
+  }
+
+  // Helper function to escape CSV values
+  const escapeCsvValue = (value) => {
+      if (value === null || value === undefined) {
+          return '';
+      }
+      return `"${String(value).replace(/"/g, '""')}"`;
+  };
+
+  // Extract CSV headers
+  const headers = [
+      'date',
+      'id',
+      'weight',
+      'userId',
+      'imageId',
+      'imagePath',
+      'imageEntryId'
+  ];
+
+  // Map entries to CSV rows
+  const rows = entries.flatMap(entry => {
+      const commonData = [
+          escapeCsvValue(entry.date),
+          escapeCsvValue(entry.id),
+          escapeCsvValue(entry.weight),
+          escapeCsvValue(entry.userId)
+      ];
+
+      if (entry.images && entry.images.length > 0) {
+          return entry.images.map(image => [
+              ...commonData,
+              escapeCsvValue(image.id),
+              escapeCsvValue(image.path),
+              escapeCsvValue(image.entryId)
+          ].join(','));
+      } else {
+          return [
+              ...commonData,
+              '',
+              '',
+              ''
+          ].join(',');
+      }
+  });
+
+  // Combine headers and rows
+  const csvContent = [headers.join(','), ...rows].join('\n');
+
+  return csvContent;
+}
+
+// Example usage:
+const entries = [
+  {
+      date: new Date().toISOString(),
+      id: 1,
+      weight: "70kg",
+      userId: "user1",
+      images: [
+          {
+              id: 1,
+              path: "/images/1.jpg",
+              entryId: 1
+          },
+          {
+              id: 2,
+              path: "/images/2.jpg",
+              entryId: 1
+          }
+      ]
+  },
+  {
+      date: new Date().toISOString(),
+      id: 2,
+      weight: null,
+      userId: "user2",
+      images: []
+  }
+];
+
+console.log(jsonToCsv(entries));
