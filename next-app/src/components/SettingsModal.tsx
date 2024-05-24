@@ -51,7 +51,6 @@ export default function SettingsModal() {
     fetch(`${process.env.NEXT_PUBLIC_API_BASE!}/download`, {
       headers: { Authorization: `Bearer ${getCookie("__session")}` },
       method: "get",
-      mode: "no-cors",
     })
       .then((res) => res.blob())
       .then((res) => {
